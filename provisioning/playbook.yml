@@ -15,7 +15,7 @@
     - { role: geerlingguy.repo-remi, when: ansible_os_family == 'RedHat' }
     - geerlingguy.firewall
     - geerlingguy.git
-    - geerlingguy.apache
+    - morten.apache
     - geerlingguy.mysql
     - geerlingguy.php
     - geerlingguy.php-pecl
@@ -61,3 +61,5 @@
 
     - include: tasks/drush-aliases.yml
     - include: tasks/cron.yml
+
+    - include: tasks/reload_extras.yml
