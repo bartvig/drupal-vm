@@ -1,6 +1,6 @@
 arknoll.selenium
 geerlingguy.adminer
-geerlingguy.apache
+morten.apache
 geerlingguy.composer
 geerlingguy.daemonize
 geerlingguy.drupal-console
