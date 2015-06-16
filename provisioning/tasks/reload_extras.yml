@@ -1,0 +1,25 @@
+---
+- name: Check if git prompt exists
+  stat: path=/home/vagrant/.git-prompt.sh
+  register: git_prompt
+
+- name: Change prompt
+  template:
+    src: ../templates/bashrc.j2
+    dest: /home/vagrant/.bashrc
+  when: git_prompt.stat.exists == False
+
+- name: Download git prompt
+  get_url: url=https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh dest=/home/vagrant/.git-prompt.sh force=yes
+  when: git_prompt.stat.exists == False
+
+- file: path=/home/vagrant/.git-prompt.sh owner=vagrant group=vagrant
+
+- name: Set timezone
+  lineinfile: >
+    dest="/etc/timezone"
+    regexp="{{ item.regexp }}"
+    line="{{ item.line }}"
+    state=present
+  with_items:
+    - { regexp: "^(?!Europe/Copenhagen)", line: "Europe/Copenhagen" }
