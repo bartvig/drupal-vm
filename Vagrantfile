@@ -29,11 +29,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # If hostsupdater plugin is installed, add all servernames as aliases.
   if Vagrant.has_plugin?("vagrant-hostsupdater")
     config.hostsupdater.aliases = []
-    for host in vconfig['apache_vhosts']
-      # Add all the hosts that aren't defined as Ansible vars.
-      unless host['servername'].include? "{{"
-        config.hostsupdater.aliases.push(host['servername'])
-      end
+    for host in vconfig['vhosts']
+      config.hostsupdater.aliases.push(host + "." + vconfig['drupal_domain'])
     end
   end
 
