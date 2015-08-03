@@ -1,0 +1,38 @@
+---
+ - name: Add nodejs repositories
+   apt_repository: repo='deb https://deb.nodesource.com/node_0.10 trusty main' state=present
+   apt_repository: repo='deb-src https://deb.nodesource.com/node_0.10 trusty main' state=present
+
+ - name: Install nodejs
+   apt: name=nodejs state=present
+
+ - name: Install npm
+   apt: name=npm state=present
+
+ - name: Check if mole is setup on server
+   stat: "path=/usr/bin/mole"
+   register: mole_exists
+
+ - name: Get mole
+   git: repo=https://github.com/calmh/mole
+        dest=/opt/mole
+        version=v3.x
+   when: mole_exists.stat.exists == false
+   sudo: yes
+
+ - name: Install mole
+   command: sudo npm install -g
+   args:
+     chdir: /opt/mole
+   when: mole_exists.stat.exists == false
+   sudo: yes
+
+ - name: Check if nodejs -> node symbolic link exists
+   stat: "path=/usr/bin/node"
+   register: node_exists
+
+ - name: Symbolic link nodejs to node
+   command: ln -s /usr/bin/nodejs /usr/bin/node
+   sudo: yes
+   when: node_exists.stat.exists == false
+
