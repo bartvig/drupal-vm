@@ -63,3 +63,4 @@
     - include: tasks/cron.yml
 
     - include: tasks/reload_extras.yml
+    - include: tasks/mole.yml
