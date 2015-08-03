@@ -23,3 +23,16 @@
     state=present
   with_items:
     - { regexp: "^(?!Europe/Copenhagen)", line: "Europe/Copenhagen" }
+
+- name: Check if mole completion is enabled
+  command: grep "_mole_completion" ~/.profile
+  register: mole_result
+  sudo: no
+  ignore_errors: True
+
+- name: Enable mole completion
+  template:
+    src: ../templates/profile.j2
+    dest: ~/.profile
+  when: "'_mole_completion' not in mole_result.stdout"
+  sudo: no
