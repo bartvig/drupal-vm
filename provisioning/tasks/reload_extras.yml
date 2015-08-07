@@ -16,13 +16,10 @@
 - file: path=/home/vagrant/.git-prompt.sh owner=vagrant group=vagrant
 
 - name: Set timezone
-  lineinfile: >
+  replace: >
     dest="/etc/timezone"
-    regexp="{{ item.regexp }}"
-    line="{{ item.line }}"
-    state=present
-  with_items:
-    - { regexp: "^(?!Europe/Copenhagen)", line: "Europe/Copenhagen" }
+    regexp="^(?!Europe/Copenhagen)[^\n]+"
+    replace="Europe/Copenhagen"
 
 - name: Check if mole completion is enabled
   command: grep "_mole_completion" ~/.profile
@@ -34,5 +31,5 @@
   template:
     src: ../templates/profile.j2
     dest: ~/.profile
-  when: "'_mole_completion' not in mole_result.stdout"
+  when: "mole_result|failed"
   sudo: no
