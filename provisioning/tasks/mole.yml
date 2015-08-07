@@ -10,7 +10,7 @@
    apt: name=npm state=present
 
  - name: Check if mole is setup on server
-   stat: "path=/usr/bin/mole"
+   stat: "path=/usr/local/bin/mole"
    register: mole_exists
 
  - name: Get mole
