@@ -59,10 +59,13 @@
   register: ddb_installed
   sudo: no
 
+- name: Drush cc drush
+  command: drush cc drush
+  sudo: no
+
 - name: Install ddb
   command: "{{ item }}"
   with_items:
-  - drush cc drush
   - drush -y --ding2-only-once --strict=0 make --concurrency=1 --no-core --working-copy --contrib-destination=. ding2.make
   args:
     chdir: /var/www/ddb/profiles/ding2
