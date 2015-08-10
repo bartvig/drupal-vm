@@ -4,7 +4,7 @@
   register: drush_ding2_utils
 
 - name: Install drush ding2 utils
-  git: repo=https://github.com/calmh/mole
+  git: repo=http://github.com/ding2/drush-ding2-utils.git
           dest=~/.drush/drush-ding2-utils
   when: drush_ding2_utils.stat.exists == false
   sudo: no
