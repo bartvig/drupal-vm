@@ -1,0 +1,74 @@
+---
+- name: DDB path
+  stat: path=/var/www/ddb
+  register: ddb_path
+
+- name: Install drupal
+  command: "{{ item }}"
+  with_items:
+  - drush dl drupal-7.34
+  - mv drupal-7.34 ddb
+  args:
+    chdir: /var/www
+  when: ddb_path.stat.exists == false
+  sudo: no
+
+- name: Check if ddb patches are installed
+  stat: path=~/ddb_patches_installed
+  register: ddb_patches_installed
+  sudo: no
+
+- name: Install ddb patches
+  get_url: "url={{ item }} dest=/tmp/"
+  with_items:
+  - http://drupal.org/files/menu-get-item-rebuild-1232346-22_0.patch
+  - http://drupal.org/files/issues/translate_role_names-2205581-1.patch
+  - http://drupal.org/files/ssl-socket-transports-1879970-13.patch
+  - https://drupal.org/files/issues/autocomplete-1232416-17-7x.patch
+  when: ddb_patches_installed.stat.exists == false
+
+- name: DDB patches
+  shell: "{{ item }}"
+  with_items:
+  - patch -p1 < /tmp/menu-get-item-rebuild-1232346-22_0.patch
+  - patch -p1 < /tmp/translate_role_names-2205581-1.patch
+  - patch -p1 < /tmp/ssl-socket-transports-1879970-13.patch
+  - patch -p1 < /tmp/autocomplete-1232416-17-7x.patch
+  args:
+    chdir: /var/www/ddb
+  when: ddb_patches_installed.stat.exists == false
+  sudo: no
+
+- name: Register ddb patches installed
+  file: state=touch path=~/ddb_patches_installed
+  sudo: no
+
+- name: Check if ding2 install profile is fetched
+  stat: path=/var/www/ddb/profiles/ding2
+  register: ding2_install_profile
+
+- name: Install ddb
+  git: repo=git@github.com:ding2/ding2.git
+          dest=/var/www/ddb/profiles/ding2
+          accept_hostkey=true
+  when: ding2_install_profile.stat.exists == false
+  sudo: no
+
+- name: Check if ddb is installed
+  stat: path=~/ddb_installed
+  register: ddb_installed
+  sudo: no
+
+- name: Install ddb
+  command: "{{ item }}"
+  with_items:
+  - drush cc drush
+  - drush -y --ding2-only-once --strict=0 make --concurrency=1 --no-core --working-copy --contrib-destination=. ding2.make
+  args:
+    chdir: /var/www/ddb/profiles/ding2
+  when: ddb_installed.stat.exists == false
+  sudo: no
+
+- name: Register that ddb is installed
+  file: state=touch path=~/ddb_installed
+  sudo: no

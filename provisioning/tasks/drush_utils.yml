@@ -1,0 +1,10 @@
+---
+- name: Check if drush utils are installed
+  stat: path=/home/vagrant/.drush/drush-ding2-utils
+  register: drush_ding2_utils
+
+- name: Install drush ding2 utils
+  git: repo=https://github.com/calmh/mole
+          dest=~/.drush/drush-ding2-utils
+  when: drush_ding2_utils.stat.exists == false
+  sudo: no
